@@ -2,13 +2,22 @@ source "https://rubygems.org"
 
 # API serialization
 gem "active_model_serializers"
+# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+gem "bcrypt"
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 # Authentication
 gem "devise"
+# Geocoding
+gem "geocoder"
+# JWT token authentication
 gem "jwt"
 # Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
 gem "kamal", require: false
+# pagination
+gem "kaminari"
+# oauth authentication
+gem "oauth2"
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.1"
 # Search
@@ -22,8 +31,6 @@ gem "rswag"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
 
-# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem "bcrypt", "~> 3.1.7"
 
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
 gem "solid_cable"
