@@ -37,17 +37,17 @@ class Experience < ApplicationRecord
     near([ lat, lng ], radius, units: :km)
   }
   scope :available_on, ->(date) {
-    where('id NOT IN (
+    where("id NOT IN (
       SELECT experience_id FROM bookings 
       WHERE booking_date = ? 
       GROUP BY experience_id 
       HAVING SUM(participants) >= max_participants
-    )', date)
+    )", date)
   }
 
   # Methods
   def full_address
-    [ address, city, state, country, postal_code ].compact.join(', ')
+    [ address, city, state, country, postal_code ].compact.join(", ")
   end
 
   def average_rating

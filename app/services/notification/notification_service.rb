@@ -1,10 +1,10 @@
 module Notification
   class NotificationService
     TEMPLATES = {
-      booking_confirmed: 'booking_confirmed',
-      payment_completed: 'payment_completed',
-      booking_reminder: 'booking_reminder',
-      review_reminder: 'review_reminder'
+      booking_confirmed: "booking_confirmed",
+      payment_completed: "payment_completed",
+      booking_reminder: "booking_reminder",
+      review_reminder: "review_reminder"
     }.freeze
 
     class << self

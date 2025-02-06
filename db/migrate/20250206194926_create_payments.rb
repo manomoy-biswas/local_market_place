@@ -4,7 +4,7 @@ class CreatePayments < ActiveRecord::Migration[8.0]
       t.references :booking, null: false, foreign_key: true
       t.decimal :amount, precision: 10, scale: 2, null: false
       t.decimal :commission_amount, precision: 10, scale: 2
-      t.string :currency, default: 'INR'
+      t.string :currency, default: "INR"
       t.integer :status, default: 0
       t.string :payment_method
       t.string :transaction_id

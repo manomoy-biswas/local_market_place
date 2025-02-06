@@ -7,7 +7,7 @@ class User < ApplicationRecord
   has_many :experiences, foreign_key: :host_id, dependent: :destroy
   has_many :bookings, foreign_key: :traveler_id
   has_many :reviews, dependent: :destroy
-  has_many :received_reviews, class_name: 'Review', as: :reviewable
+  has_many :received_reviews, class_name: "Review", as: :reviewable
 
   # Nested attributes
   accepts_nested_attributes_for :profile

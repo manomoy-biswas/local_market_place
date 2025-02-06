@@ -8,7 +8,7 @@
 # migrations from scratch. Old migrations may fail to apply correctly if those
 # migrations use external dependencies or application code.
 #
-# It's strongly recommended that you check this file into your version control system.
+# It"s strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.0].define(version: 2025_02_06_204033) do
   # These are extensions that must be enabled in order to support this database
@@ -75,7 +75,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_06_204033) do
     t.datetime "updated_at", null: false
     t.decimal "average_rating", precision: 3, scale: 2, default: "0.0"
     t.integer "total_reviews_count", default: 0
-    t.index "to_tsvector('english'::regconfig, (((title)::text || ' '::text) || description))", name: "experiences_text_search", using: :gin
+    t.index "to_tsvector("english"::regconfig, (((title)::text || " "::text) || description))", name: "experiences_text_search", using: :gin
     t.index ["average_rating"], name: "index_experiences_on_average_rating"
     t.index ["category_id"], name: "index_experiences_on_category_id"
     t.index ["city"], name: "index_experiences_on_city"

@@ -3,13 +3,13 @@ source "https://rubygems.org"
 # API serialization
 gem "active_model_serializers"
 # File Storage
-gem 'aws-sdk-s3'
+gem "aws-sdk-s3"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt"
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 # storage
-gem 'cloudinary'
+gem "cloudinary"
 # Authentication
 gem "devise"
 # push notifications
@@ -19,7 +19,7 @@ gem "figaro"
 # Geocoding
 gem "geocoder"
 # location Service
-gem 'google_maps_service'
+gem "google_maps_service"
 # JWT token authentication
 gem "jwt"
 # Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
@@ -38,7 +38,7 @@ gem "pg_search"
 gem "puma", ">= 5.0"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 #API Development
-gem 'rack-cors'
+gem "rack-cors"
 gem "redis"
 gem "rails", "~> 8.0.1"
 # API documentation
@@ -46,7 +46,7 @@ gem "rswag"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
 # email provider
-gem 'sendgrid-ruby'
+gem "sendgrid-ruby"
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
 gem "solid_cable"
 gem "solid_cache"
