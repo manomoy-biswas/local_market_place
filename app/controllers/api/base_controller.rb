@@ -1,7 +1,7 @@
 
 class Api::BaseController < ApplicationController
   skip_before_action :verify_authenticity_token
-  # before_action :authenticate_request
+  before_action :authenticate_request
   before_action :authenticate_user!
 
   attr_reader :current_user
@@ -14,7 +14,7 @@ class Api::BaseController < ApplicationController
   end
 
   def render_unauthorized
-    render json: { error: "Unauthorized access" }, status: :unauthorized
+    render json: { error: "Unauthorized access." }, status: :unauthorized
   end
 
   def render_error(message, status = :unprocessable_entity)

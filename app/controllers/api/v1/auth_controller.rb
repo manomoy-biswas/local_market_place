@@ -1,6 +1,8 @@
 
 class Api::V1::AuthController < Api::BaseController
+  skip_before_action :authenticate_request, except: %i[refresh_token logout]
   skip_before_action :authenticate_user!, except: %i[refresh_token logout]
+
 
   def register
     user = User.new(user_params)
