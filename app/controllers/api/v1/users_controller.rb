@@ -14,7 +14,7 @@ class Api::V1::UsersController < Api::BaseController
   def create
     @user = User.new(user_params)
     if @user.save
-      token = JsonWebToken.encode(user_id: @user.id)
+      token = Authentication::JwtService.encode(user_id: @user.id)
       render json: {
         user: @user,
         token: token,

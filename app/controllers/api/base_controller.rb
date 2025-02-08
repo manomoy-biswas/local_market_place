@@ -1,14 +1,15 @@
 
 class Api::BaseController < ApplicationController
-  before_action :authenticate_request
   skip_before_action :verify_authenticity_token
+  # before_action :authenticate_request
+  before_action :authenticate_user!
 
   attr_reader :current_user
 
   protected
 
   def authenticate_request
-    @current_user = AuthenticationService.authenticate(request.headers)
+    @current_user = Authentication::AuthenticationService.authenticate(request.headers)
     render_unauthorized unless @current_user
   end
 

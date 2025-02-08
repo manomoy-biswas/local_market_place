@@ -8,7 +8,7 @@ class Experience < ApplicationRecord
   has_many :reviews, through: :bookings
 
   # Enums
-  enum status: {
+  enum :status, {
     draft: 0,
     pending_review: 1,
     active: 2,

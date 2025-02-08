@@ -1,5 +1,5 @@
 
-class Api::V1::ExperiencesController < BaseController
+class Api::V1::ExperiencesController < Api::BaseController
   before_action :authenticate_user!, except: [:index, :show]
   before_action :set_experience, only: [:show, :update, :destroy]
   before_action :authorize_host!, only: [:create, :update, :destroy]

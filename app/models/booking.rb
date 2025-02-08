@@ -1,5 +1,5 @@
 class Booking < ApplicationRecord
-  belongs_to :traveler
+  belongs_to :traveler, class_name: "User"
   belongs_to :experience
   has_one :review, dependent: :destroy
   has_one :payment, dependent: :restrict_with_error

@@ -1,5 +1,8 @@
 class ApplicationController < ActionController::API
   include ActionController::MimeResponds
+  include ActionController::RequestForgeryProtection
+
+  protect_from_forgery with: :exception
 
   # Error handling
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
@@ -46,6 +49,12 @@ class ApplicationController < ActionController::API
     }
   end
 
+  def verify_authenticity_token
+    unless request.format.json?
+      verify_csrf_token
+    end
+  end
+
   private
 
   # Error handlers
@@ -81,5 +90,11 @@ class ApplicationController < ActionController::API
   def sanitize_page_params
     params[:page] = (params[:page] || 1).to_i
     params[:per_page] = (params[:per_page] || 25).to_i
+  end
+
+  def verify_csrf_token
+    if !valid_authenticity_token?(session, form_authenticity_param)
+      raise ActionController::InvalidAuthenticityToken
+    end
   end
 end

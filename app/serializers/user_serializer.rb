@@ -21,13 +21,11 @@ class UserSerializer < ActiveModel::Serializer
     object.received_reviews.count
   end
 
-  private
-
   def is_host?
-    object.host?
+    object.role?("host")
   end
 
   def is_traveler?
-    object.traveler?
+    object.role?("traveler")
   end
 end
