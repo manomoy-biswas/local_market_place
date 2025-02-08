@@ -19,7 +19,7 @@ module Search
         }
 
       pg_search_scope :search_by_location,
-        against: [:city, :state, :country],
+        against: %i[city state country postal_code address latitude longitude],
         using: {
           tsearch: {
             prefix: true

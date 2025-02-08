@@ -4,7 +4,7 @@ class Booking < ApplicationRecord
   has_one :review, dependent: :destroy
   has_one :payment, dependent: :restrict_with_error
 
-  enum status: {
+  enum :status, {
     pending: 0,
     confirmed: 1,
     completed: 2,
@@ -21,8 +21,32 @@ class Booking < ApplicationRecord
   before_create :generate_booking_number
   before_save :calculate_total_amount
 
+  scope :for_date, ->(date) { where(booking_date: date) }
   scope :upcoming, -> { where("booking_date > ?", Date.today) }
   scope :past, -> { where("booking_date < ?", Date.today) }
+  scope :pending, -> { where(status: :pending) }
+  scope :confirmed, -> { where(status: :confirmed) }
+  scope :completed, -> { where(status: :completed) }
+  scope :cancelled, -> { where(status: :cancelled) }
+  scope :refunded, -> { where(status: :refunded) }
+
+  {
+    pending: :pending,
+    confirmed: :confirm,
+    completed: :complete,
+    cancelled: :cancel,
+    refunded: :refund
+  }.each do |status_key, method_name|
+    # Define status change method (e.g., confirm!, cancel!)
+    define_method "#{method_name}!" do
+      update!(status: status_key)
+    end
+
+    # Define status check method (e.g., confirmed?, cancelled?)
+    define_method "#{status_key}?" do
+      status == status_key
+    end
+  end
 
   private
 

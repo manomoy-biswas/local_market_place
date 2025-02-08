@@ -1,38 +1,39 @@
 
 class Api::V1::ExperiencesController < Api::BaseController
-  before_action :authenticate_user!, except: [:index, :show]
-  before_action :set_experience, only: [:show, :update, :destroy]
-  before_action :authorize_host!, only: [:create, :update, :destroy]
+  before_action :authenticate_user!, except: %i[index show]
+  before_action :set_experience, only: %i[show update destroy]
+  before_action :authorize_host!, only: %i[create update destroy]
 
   def index
     @experiences = Experience.includes(:host, :category)
-                              .active
-                              .search(search_params)
-                              .filter(filter_params)
-                              .page(params[:page])
-                              .per(params[:per_page])
+                             .active
+                             .search(search_params)
+                             .filter_record(filter_params)
+                             .page(params[:page])
+                             .per(params[:per_page])
 
-    render json: @experiences,
-            each_serializer: ExperienceSerializer,
-            meta: pagination_dict(@experiences)
+    render json: {
+            experiences: ActiveModel::SerializableResource.new(@experiences),
+            meta: pagination_meta(@experiences)
+    }, each_serializer: ExperienceSerializer
   end
 
   def show
     render json: @experience,
-            serializer: ExperienceSerializer,
-            include: %w[host reviews]
+           serializer: ExperienceSerializer,
+           include: %w[category host reviews]
   end
 
   def create
     @experience = current_user.experiences.build(experience_params)
 
     if @experience.save
-      render json: @experience, 
-              status: :created, 
-              serializer: ExperienceSerializer
+      render json: @experience,
+             status: :created,
+             serializer: ExperienceSerializer
     else
-      render json: { errors: @experience.errors.full_messages }, 
-              status: :unprocessable_entity
+      render json: { errors: @experience.errors.full_messages },
+             status: :unprocessable_entity
     end
   end
 
@@ -55,9 +56,11 @@ class Api::V1::ExperiencesController < Api::BaseController
                               .includes(:category)
                               .page(params[:page])
 
-    render json: @experiences,
-            each_serializer: ExperienceSerializer,
-            meta: pagination_dict(@experiences)
+    render json: {
+             experiences: @experiences,
+             meta: pagination_meta(@experiences)
+           },
+           each_serializer: ExperienceSerializer
   end
 
   def check_availability

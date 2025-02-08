@@ -39,16 +39,6 @@ class ApplicationController < ActionController::API
     render json: response, status: status
   end
 
-  # Pagination helper
-  def pagination_dict(collection)
-    {
-      current_page: collection.current_page,
-      total_pages: collection.total_pages,
-      total_count: collection.total_count,
-      per_page: collection.limit_value
-    }
-  end
-
   def verify_authenticity_token
     unless request.format.json?
       verify_csrf_token

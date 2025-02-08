@@ -3,7 +3,7 @@ class Category < ApplicationRecord
   has_many :experiences, dependent: :restrict_with_error
 
   # Enums
-  enum status: { inactive: 0, active: 1 }
+  enum :status, { inactive: 0, active: 1 }
 
   # Validations
   validates :name, presence: true, uniqueness: true

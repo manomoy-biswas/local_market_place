@@ -38,9 +38,9 @@ class Experience < ApplicationRecord
   }
   scope :available_on, ->(date) {
     where("id NOT IN (
-      SELECT experience_id FROM bookings 
-      WHERE booking_date = ? 
-      GROUP BY experience_id 
+      SELECT experience_id FROM bookings
+      WHERE booking_date = ?
+      GROUP BY experience_id
       HAVING SUM(participants) >= max_participants
     )", date)
   }
@@ -69,7 +69,43 @@ class Experience < ApplicationRecord
     )
   end
 
+  def self.search(params)
+    experiences = all
+
+    experiences = experiences.search_by_text(params[:query]) if params[:query].present?
+    experiences = experiences.search_by_location(params[:location]) if params[:location].present?
+    experiences = experiences.where(category_id: params[:category_id]) if params[:category_id].present?
+    experiences
+  end
+
+  def self.filter_record(params)
+    experiences = all
+
+    experiences = filter_by_price(experiences, params)
+    experiences = filter_by_rating(experiences, params)
+    experiences = filter_by_date(experiences, params)
+
+    experiences
+  end
+
   private
+
+  def self.filter_by_price(scope, params)
+    scope = scope.where("price >= ?", params[:min_price]) if params[:min_price].present?
+    scope = scope.where("price <= ?", params[:max_price]) if params[:max_price].present?
+    scope
+  end
+
+  def self.filter_by_rating(scope, params)
+    scope = scope.where("average_rating >= ?", params[:min_rating]) if params[:min_rating].present?
+    scope
+  end
+
+  def self.filter_by_date(scope, params)
+    return scope unless params[:date].present?
+
+    scope.available_on(Date.parse(params[:date]))
+  end
 
   def location_changed?
     saved_changes.keys.any? { |k| %w[address city state country postal_code].include?(k) }

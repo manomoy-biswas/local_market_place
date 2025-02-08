@@ -11,7 +11,7 @@ class Api::V1::PaymentsController < Api::BaseController
 
     render json: @payments, 
             each_serializer: PaymentSerializer,
-            meta: pagination_dict(@payments)
+            meta: pagination_meta(@payments)
   end
 
   def show
