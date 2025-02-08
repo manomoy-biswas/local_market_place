@@ -1,12 +1,12 @@
-<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-  <h2>Welcome to Local Experience!</h2>
+<div>
+  <h2><%= @content[:title] %></h2>
   
   <p>Hi <%= @user.profile&.first_name || @user.email %>,</p>
 
-  <p>Thanks for signing up! Please verify your email address by clicking the button below:</p>
+  <p><%= @content[:message] %></p>
 
   <div style="text-align: center; margin: 30px 0;">
-    <a href="<%= @verification_url %>" style="background-color: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px;">
+    <a href="<%= @verification_url %>" class="button">
       Verify Email Address
     </a>
   </div>
@@ -14,11 +14,21 @@
   <p>Or copy and paste this link in your browser:</p>
   <p><%= @verification_url %></p>
 
-  <p>This link will expire in 24 hours.</p>
+  <div class="divider"></div>
 
-  <hr style="margin: 30px 0;">
+  <div>
+    <h3>Next Steps:</h3>
+    <ul>
+      <% @content[:next_steps].each do |step| %>
+        <li><%= step %></li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="divider"></div>
   
-  <p style="color: #666; font-size: 12px;">
-    If you didn't create an account, please ignore this email.
+  <p class="footer">
+    If you didn't create an account, please ignore this email.<br>
+    This link will expire in 24 hours.
   </p>
 </div>

@@ -1,0 +1,31 @@
+<div>
+  <h2><%= @content[:title] %></h2>
+  
+  <p>Hi <%= @user.profile&.first_name || @user.email %>,</p>
+
+  <p>Welcome to Local Experience! Your account has been verified successfully.</p>
+
+  <div style="text-align: center; margin: 30px 0;">
+    <a href="<%= @login_url %>" class="button">
+      <%= @content[:cta] %>
+    </a>
+  </div>
+
+  <div class="divider"></div>
+
+  <div>
+    <h3>Available Features:</h3>
+    <ul>
+      <% @content[:features].each do |feature| %>
+        <li><%= feature %></li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="divider"></div>
+  
+  <p class="footer">
+    Need help? Contact our support team at support@localexperience.com<br>
+    Follow us on social media for updates and news!
+  </p>
+</div>

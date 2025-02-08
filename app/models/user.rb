@@ -29,6 +29,7 @@ class User < ApplicationRecord
   before_validation :set_default_role, on: :create
   after_create :create_default_profile
   after_create :send_verification_email
+  after_update :send_welcome_email, if: :saved_change_to_verified_at? && :verified?
 
   # Scopes
   scope :verified, -> { where.not(verified_at: nil) }
@@ -121,6 +122,10 @@ class User < ApplicationRecord
   def send_verification_email
     update(verification_token: generate_unique_token, verification_sent_at: Time.current)
     UserMailer.verification_email(self).deliver_later
+  end
+
+  def send_welcome_email
+    UserMailer.welcome_email(self).deliver_later
   end
 
   def generate_unique_token
