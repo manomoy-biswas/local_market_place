@@ -56,8 +56,8 @@ class Api::V1::AuthController < Api::BaseController
     user = User.find_by(email: params[:email])
 
     if user
-      token = user.generate_password_reset_token
-      UserMailer.reset_password_email(user, token).deliver_later
+      user.generate_password_reset_token
+      UserMailer.reset_password_email(user).deliver_later
       render json: { message: "Password reset instructions sent" }
     else
       render json: { error: "Email not found" }, 
@@ -71,7 +71,7 @@ class Api::V1::AuthController < Api::BaseController
     if user&.reset_password(params[:password])
       render json: { message: "Password reset successful" }
     else
-      render json: { error: "Invalid or expired token" }, 
+      render json: { error: "Invalid or expired token" },
               status: :unprocessable_entity
     end
   end
@@ -106,7 +106,7 @@ class Api::V1::AuthController < Api::BaseController
   def user_params
     params.require(:user).permit(
       :email, :password, :password_confirmation, :role,
-      rofile_attributes: %i[first_name last_name phone_number]
+      profile_attributes: %i[first_name last_name phone_number]
     )
   end
 end

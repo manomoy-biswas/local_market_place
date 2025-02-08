@@ -19,9 +19,9 @@ class UserMailer < ApplicationMailer
     )
   end
 
-  def reset_password_email(user, token)
+  def reset_password_email(user)
     @user = user
-    @reset_url = reset_password_url(token)
+    @reset_url = reset_password_url(@user.reset_password_token)
 
     mail(
       to: @user.email,
@@ -52,14 +52,14 @@ class UserMailer < ApplicationMailer
   private
 
   def verify_email_url(token)
-    "#{ENV["FRONTEND_URL"]}/verify-email?token=#{token}"
+    "#{ENV["host_url"]}/api/v1/auth/verify/#{token}"
   end
 
   def reset_password_url(token)
-    "#{ENV["FRONTEND_URL"]}/reset-password?token=#{token}"
+    "#{ENV["host_url"]}/api/v1/auth/reset_password/#{token}"
   end
 
   def login_url
-    "#{ENV["FRONTEND_URL"]}/login"
+    "#{ENV["host_url"]}/api/v1/auth/login"
   end
 end

@@ -48,7 +48,7 @@ class User < ApplicationRecord
 
   def generate_password_reset_token
     update(
-      reset_password_token: SecureRandom.urlsafe_base64,
+      reset_password_token: generate_unique_token,
       reset_password_sent_at: Time.current
     )
   end
@@ -86,6 +86,22 @@ class User < ApplicationRecord
 
     return user if authenticate(password)
     nil
+  end
+
+  def reset_password(new_password)
+    return false if reset_password_token.nil?
+
+    return false if reset_password_token_expired?
+
+    update(
+      password: new_password,
+      reset_password_token: nil,
+      reset_password_sent_at: nil
+    )
+  end
+
+  def reset_password_token_expired?
+    reset_password_sent_at.nil? || reset_password_sent_at < 2.hours.ago
   end
 
   private
