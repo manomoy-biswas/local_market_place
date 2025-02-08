@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       post "auth/reset_password", to: "auth#reset_password"
       post "auth/refresh", to: "auth#refresh_token"
       get "auth/:provider/callback", to: "auth#social_auth"
+      delete "auth/logout", to: "auth#logout"
 
       resources :experiences do
         member do

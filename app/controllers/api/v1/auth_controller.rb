@@ -83,6 +83,7 @@ class Api::V1::AuthController < Api::BaseController
     render json: { token: new_token }
   end
 
+  # TODO: Implement social authentication
   def social_auth
     auth_data = request.env["omniauth.auth"]
     result = Authentication::OauthService.authenticate(auth_data)
@@ -99,7 +100,8 @@ class Api::V1::AuthController < Api::BaseController
   end
 
   def logout
-    current_user.invalidate_token
+    current_token = request.headers["Authorization"]&.split(" ")&.last
+    current_user.invalidate_token(current_token)
     render json: { message: "Logout successful" }
   end
 

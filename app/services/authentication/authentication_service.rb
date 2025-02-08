@@ -13,6 +13,8 @@ module Authentication
         token = extract_token(headers)
         return nil unless token
 
+        return nil if Authentication::JwtBlacklist.blacklisted?(token)
+
         decoded = Authentication::JwtService.decode(token)
         User.find_by(id: decoded["user_id"]) if decoded
       end

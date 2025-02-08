@@ -105,6 +105,21 @@ class User < ApplicationRecord
     reset_password_sent_at.nil? || reset_password_sent_at < 2.hours.ago
   end
 
+  def invalidate_token(current_token)
+    if current_token
+      # Add token to blacklist with TTL
+      Authentication::JwtBlacklist.add(
+        user_id: id,
+        token: current_token,
+        exp: 4.hours.from_now
+      )
+    end
+    true
+  rescue StandardError => e
+    Rails.logger.error("Error invalidating token: #{e.message}")
+    false
+  end
+
   private
 
   def downcase_email
