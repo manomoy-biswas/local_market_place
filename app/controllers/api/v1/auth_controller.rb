@@ -44,7 +44,7 @@ class Api::V1::AuthController < Api::BaseController
 
     render json: { message: "User already verified." } and return if user&.verified?
 
-    if user&.verify_email!(params[:token])
+    if user&.verify_email(params[:token])
       render json: { message: "Email verified successfully" }
     else
       render json: { error: "Invalid verification token" },

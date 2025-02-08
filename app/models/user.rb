@@ -37,6 +37,7 @@ class User < ApplicationRecord
 
   def verify_email(token)
     return false unless verification_token == token
+
     return false if verification_expired?
 
     update(
@@ -72,7 +73,26 @@ class User < ApplicationRecord
     verification_pending? && verification_sent_at < 24.hours.ago
   end
 
+  # Authentication methods
+  def authenticate(password)
+    return false unless password_digest.present?
+
+    BCrypt::Password.new(password_digest).is_password?(password)
+  end
+
+  def self.authenticate(email, password)
+    user = find_by(email: email.downcase)
+    return nil unless user
+
+    return user if authenticate(password)
+    nil
+  end
+
   private
+
+  def downcase_email
+    self.email = email.downcase if email.present?
+  end
 
   def set_default_role
     self.role ||= :traveler
