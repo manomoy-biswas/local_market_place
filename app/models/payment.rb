@@ -12,25 +12,11 @@ class Payment < ApplicationRecord
     cancelled: 7
   }
 
-  store_accessor :payment_details,
-                :gateway_response,
-                :payment_method_details,
-                :payment_method,
-                :bank_name,
-                :upi_transaction_id,
-                :card_network,
-                :card_last4
-
-  store_accessor :refund_details,
-                :refund_status,
-                :refund_speed
-
   validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :currency, presence: true
   validates :status, presence: true
   validates :transaction_id, uniqueness: true, allow_nil: true
 
-  before_create :generate_transaction_id
   before_save :calculate_commission
 
   scope :confirmed, -> { where(status: :completed) }
@@ -44,7 +30,8 @@ class Payment < ApplicationRecord
   def payment_method_details
     case payment_method
     when "card"
-      "#{card_network} card ending in #{card_last4}"
+      card = payment_details["card"]
+      "#{card['network']} card ending in #{card['last4']}"
     when "upi"
       "UPI (#{upi_transaction_id})"
     when "netbanking"
@@ -55,10 +42,6 @@ class Payment < ApplicationRecord
   end
 
   private
-
-  def generate_transaction_id
-    self.transaction_id = "PAY#{Time.current.to_i}#{SecureRandom.hex(4).upcase}"
-  end
 
   def calculate_commission
     return unless amount_changed?
