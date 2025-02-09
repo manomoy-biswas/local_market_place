@@ -3,39 +3,12 @@ class Api::V1::UsersController < Api::BaseController
   before_action :set_user, only: %i[show update destroy]
 
   def index
-    @users = User.includes(:profile).all
+    @users = User.includes(:profile, :traveler).all
     render json: @users, status: :ok
   end
 
   def show
-    render json: @user, include: %i[profile reviews], status: :ok
-  end
-
-  def create
-    @user = User.new(user_params)
-    if @user.save
-      token = Authentication::JwtService.encode(user_id: @user.id)
-      render json: {
-        user: @user,
-        token: token,
-        message: "User created successfully"
-      }, status: :created
-    else
-      render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
-    end
-  end
-
-  def login
-    @user = User.find_by(email: params[:email])
-    if @user&.authenticate(params[:password])
-      token = JsonWebToken.encode(user_id: @user.id)
-      render json: {
-        user: @user,
-        token: token
-      }, status: :ok
-    else
-      render json: { error: "Invalid credentials" }, status: :unauthorized
-    end
+    render json: @user, include: %i[profile traveler reviews], status: :ok
   end
 
   def update
@@ -58,6 +31,12 @@ class Api::V1::UsersController < Api::BaseController
            status: :ok
   end
 
+  def traveler
+    render json: current_user,
+           include: %i[traveler reviews bookings],
+           status: :ok
+  end
+
   private
 
   def set_user
@@ -68,16 +47,33 @@ class Api::V1::UsersController < Api::BaseController
 
   def user_params
     params.require(:user).permit(
-      :email,
-      :password,
-      :password_confirmation,
-      :user_type,
       profile_attributes: [
         :first_name,
         :last_name,
         :phone_number,
         :bio,
-        :avatar
+        :avatar_url,
+        :address,
+        :city,
+        :state,
+        :country,
+        :postal_code,
+        preferences: [
+          :theme,
+          :notification_settings,
+          :privacy_settings
+        ]
+      ],
+      traveler_attributes: [
+        :preferred_currency,
+        :preferred_language,
+        preferences: [
+          :dietary_restrictions,
+          :accessibility_needs,
+          :travel_style,
+          :activity_preferences,
+          :price_range
+        ]
       ]
     )
   end

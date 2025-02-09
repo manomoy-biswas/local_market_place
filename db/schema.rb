@@ -8,11 +8,39 @@
 # migrations from scratch. Old migrations may fail to apply correctly if those
 # migrations use external dependencies or application code.
 #
-# It"s strongly recommended that you check this file into your version control system.
+# It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_06_204033) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_09_113304) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "bookings", force: :cascade do |t|
     t.bigint "traveler_id", null: false
@@ -75,7 +103,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_06_204033) do
     t.datetime "updated_at", null: false
     t.decimal "average_rating", precision: 3, scale: 2, default: "0.0"
     t.integer "total_reviews_count", default: 0
-    t.index "to_tsvector("english"::regconfig, (((title)::text || " "::text) || description))", name: "experiences_text_search", using: :gin
+    t.index "to_tsvector('english'::regconfig, (((title)::text || ' '::text) || description))", name: "experiences_text_search", using: :gin
     t.index ["average_rating"], name: "index_experiences_on_average_rating"
     t.index ["category_id"], name: "index_experiences_on_category_id"
     t.index ["city"], name: "index_experiences_on_city"
@@ -96,14 +124,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_06_204033) do
     t.string "bank_account_number"
     t.string "bank_routing_number"
     t.string "bank_name"
-    t.string "identity_proof"
-    t.string "address_proof"
     t.decimal "commission_rate", precision: 5, scale: 2, default: "10.0"
     t.datetime "verified_at"
     t.integer "status", default: 0
     t.jsonb "verification_details", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "bank_details", default: {}, null: false
+    t.string "address_proof"
+    t.string "identity_proof"
     t.index ["business_name"], name: "index_hosts_on_business_name"
     t.index ["status"], name: "index_hosts_on_status"
     t.index ["user_id"], name: "index_hosts_on_user_id"
@@ -144,9 +173,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_06_204033) do
     t.string "error_message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "refund_id"
+    t.jsonb "refund_details", default: {}
     t.index ["booking_id"], name: "index_payments_on_booking_id"
     t.index ["gateway_reference"], name: "index_payments_on_gateway_reference"
     t.index ["paid_at"], name: "index_payments_on_paid_at"
+    t.index ["refund_id"], name: "index_payments_on_refund_id", unique: true
     t.index ["status"], name: "index_payments_on_status"
     t.index ["transaction_id"], name: "index_payments_on_transaction_id", unique: true
   end
@@ -224,10 +256,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_06_204033) do
     t.index ["verification_token"], name: "index_users_on_verification_token", unique: true
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "bookings", "experiences"
   add_foreign_key "bookings", "travelers"
   add_foreign_key "experiences", "categories"
-  add_foreign_key "experiences", "users", column: "host_id"
   add_foreign_key "hosts", "users"
   add_foreign_key "messages", "bookings"
   add_foreign_key "messages", "users", column: "recipient_id"

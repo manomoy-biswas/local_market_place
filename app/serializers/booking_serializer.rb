@@ -5,7 +5,8 @@ class BookingSerializer < ActiveModel::Serializer
   belongs_to :traveler
   belongs_to :experience
   has_one :review
-  has_one :payment
+  has_one :confirmed_payment
+  has_one :refund_payment
 
   def total_amount
     object.total_amount.to_f

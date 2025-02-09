@@ -20,6 +20,8 @@ gem "figaro"
 gem "geocoder"
 # location Service
 gem "google_maps_service"
+# Image Processing
+gem "image_processing", ">= 1.2"
 # JWT token authentication
 gem "jwt"
 # Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
@@ -41,6 +43,8 @@ gem "puma", ">= 5.0"
 gem "rack-cors"
 gem "redis"
 gem "rails", "~> 8.0.1"
+# payment getway integration
+gem "razorpay"
 # API documentation
 gem "rswag"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]

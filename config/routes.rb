@@ -17,13 +17,13 @@ Rails.application.routes.draw do
         collection do
           get :host_experiences
         end
-        resources :bookings do
-          member do
-            post :cancel
-          end
-        end
-        resources :reviews
       end
+      resources :bookings do
+        member do
+          post :cancel
+        end
+      end
+      resources :reviews
 
       resources :users do
         resources :messages do
@@ -39,8 +39,10 @@ Rails.application.routes.draw do
       resources :payments do
         member do
           post :refund
+          post :confirm
         end
       end
+      resources :hosts
     end
   end
 end

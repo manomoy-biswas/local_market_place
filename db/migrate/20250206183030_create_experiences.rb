@@ -2,7 +2,7 @@ class CreateExperiences < ActiveRecord::Migration[8.0]
   def change
     create_table :experiences do |t|
       # Basic info
-      t.references :host, null: false, foreign_key: { to_table: :users }
+      t.references :host, null: false, foreign_key: true
       t.string :title, null: false
       t.text :description, null: false
       t.integer :status, default: 0

@@ -2,7 +2,9 @@ class Booking < ApplicationRecord
   belongs_to :traveler, class_name: "User"
   belongs_to :experience
   has_one :review, dependent: :destroy
-  has_one :payment, dependent: :restrict_with_error
+  has_many :payments, dependent: :restrict_with_error
+  has_one :confirmed_payment, -> { confirmed }, class_name: "Payment"
+  has_one :refund_payment, -> { refunded }, class_name: "Payment"
 
   enum :status, {
     pending: 0,
@@ -20,6 +22,7 @@ class Booking < ApplicationRecord
 
   before_create :generate_booking_number
   before_save :calculate_total_amount
+  after_create :record_payment
 
   scope :for_date, ->(date) { where(booking_date: date) }
   scope :upcoming, -> { where("booking_date > ?", Date.today) }
@@ -46,6 +49,15 @@ class Booking < ApplicationRecord
     define_method "#{status_key}?" do
       status == status_key
     end
+  end
+
+  def record_payment
+    self.payments.create!(
+      amount: total_amount,
+      currency: traveler.preferred_currency,
+      status: :pending,
+      gateway_reference: nil
+    )
   end
 
   private

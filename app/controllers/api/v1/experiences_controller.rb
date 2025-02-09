@@ -25,7 +25,7 @@ class Api::V1::ExperiencesController < Api::BaseController
   end
 
   def create
-    @experience = current_user.experiences.build(experience_params)
+    @experience = current_user.host.experiences.build(experience_params)
 
     if @experience.save
       render json: @experience,
@@ -52,9 +52,10 @@ class Api::V1::ExperiencesController < Api::BaseController
   end
 
   def host_experiences
-    @experiences = current_user.experiences
-                              .includes(:category)
-                              .page(params[:page])
+    @experiences = current_user.host
+                               .experiences
+                               .includes(:category)
+                               .page(params[:page])
 
     render json: {
              experiences: @experiences,

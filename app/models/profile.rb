@@ -8,6 +8,11 @@ class Profile < ApplicationRecord
                            format: { with: /\A\+?\d{10,14}\z/ }
   validates :postal_code, format: { with: /\A\d{6}\z/ }, allow_blank: true
 
+  store_accessor :preferences,
+                 :theme,
+                 :notification_settings,
+                 :privacy_settings
+
   # Geocoding
   geocoded_by :full_address
   after_validation :geocode, if: :address_changed?
@@ -22,8 +27,7 @@ class Profile < ApplicationRecord
   end
 
   def complete?
-    required_fields = [ first_name, last_name, phone_number, 
-                      address, city, country ]
+    required_fields = [ first_name, last_name, phone_number ]
     required_fields.all?(&:present?)
   end
 

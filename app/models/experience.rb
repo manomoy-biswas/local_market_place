@@ -2,7 +2,7 @@ class Experience < ApplicationRecord
   include Search::Searchable
 
   # Relationships
-  belongs_to :host, class_name: "User"
+  belongs_to :host
   belongs_to :category
   has_many :bookings, dependent: :restrict_with_error
   has_many :reviews, through: :bookings
@@ -86,6 +86,20 @@ class Experience < ApplicationRecord
     experiences = filter_by_date(experiences, params)
 
     experiences
+  end
+
+  def available?(date, requested_participants)
+    return false unless active?
+    return false unless date >= Date.current
+    return false if requested_participants > max_participants
+
+    available_slots(date) >= requested_participants
+  end
+
+  private
+
+  def valid_date?(date)
+    date.is_a?(Date) && date >= Date.current
   end
 
   private

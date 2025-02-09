@@ -4,13 +4,18 @@ class User < ApplicationRecord
 
   # Relationships
   has_one :profile, dependent: :destroy
-  has_many :experiences, foreign_key: :host_id, dependent: :destroy
-  has_many :bookings, foreign_key: :traveler_id
+  has_one :traveler, dependent: :destroy
+  has_one :host, dependent: :destroy
+  has_many :experiences, through: :host
+  has_many :bookings, through: :traveler
+  has_many :booking_payments, through: :bookings, class: "Payment"
   has_many :reviews, foreign_key: :reviewer_id, dependent: :destroy
   has_many :received_reviews, class_name: "Review", as: :reviewable
 
   # Nested attributes
   accepts_nested_attributes_for :profile
+  accepts_nested_attributes_for :traveler, update_only: true
+
 
   # Enums
   enum :role, { traveler: 0, host: 1, admin: 2 }, default: :traveler
@@ -29,7 +34,8 @@ class User < ApplicationRecord
   before_validation :set_default_role, on: :create
   after_create :create_default_profile
   after_create :send_verification_email
-  after_update :send_welcome_email, if: :saved_change_to_verified_at? && :verified?
+  after_create_commit :create_traveler_record, if: :traveler_role?
+  after_update :send_welcome_email, if: :saved_change_to_verified_at?
 
   # Scopes
   scope :verified, -> { where.not(verified_at: nil) }
@@ -52,6 +58,10 @@ class User < ApplicationRecord
       reset_password_token: generate_unique_token,
       reset_password_sent_at: Time.current
     )
+  end
+
+  def traveler_role?
+    role?(:traveler)
   end
 
   def role?(role_name)
@@ -155,5 +165,17 @@ class User < ApplicationRecord
     # Add checksum and encode
     checksum = Digest::SHA256.hexdigest(raw_token)[0..7]
     Base64.urlsafe_encode64("#{raw_token}:#{checksum}")
+  end
+
+  def create_traveler_record
+    create_traveler! unless traveler
+  rescue => e
+    Rails.logger.error("Failed to create traveler record: #{e.message}")
+  end
+
+  def create_traveler_record
+    create_host! unless traveler
+  rescue => e
+    Rails.logger.error("Failed to create traveler record: #{e.message}")
   end
 end
