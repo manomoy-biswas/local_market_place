@@ -29,8 +29,11 @@ class Api::V1::BookingsController < Api::BaseController
       @booking.status = :pending
 
       if @booking.save
-        payment = initiate_payment
-        render json: create_booking_response(payment), status: :created
+        render json: {
+          message: "Booking created successfully",
+          booking: BookingSerializer.new(@booking),
+          payment: PaymentSerializer.new(@booking.payments.pending.last)
+        }, status: :created
       else
         render json: { errors: @booking.errors.full_messages },
                status: :unprocessable_entity
@@ -77,31 +80,5 @@ class Api::V1::BookingsController < Api::BaseController
     return if current_user.traveler.present?
 
     current_user.create_traveler!
-  end
-
-  def create_booking_response(payment)
-    {
-      booking: BookingSerializer.new(@booking),
-      payment: {
-        razorpay_order_id: payment.gateway_reference,
-        amount: payment.amount,
-        currency: payment.currency,
-        key_id: ENV["RAZORPAY_KEY_ID"],
-        prefill: {
-          name: current_user.profile.full_name,
-          email: current_user.email,
-          contact: current_user.profile.phone_number
-        },
-        notes: {
-          booking_number: @booking.booking_number
-        }
-      }
-    }
-  end
-
-  def initiate_payment
-    service = Payment::RazorpayService.new(@booking)
-    service.create_order
-    @booking.payments.pending.last
   end
 end

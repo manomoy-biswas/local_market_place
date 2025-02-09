@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Razorpay Payment Test</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+    <h2>Razorpay Payment Test</h2>
+    <input type="number" id="bookingId" placeholder="Enter Booking ID">
+    <input type="number" id="paymentId" placeholder="Enter Payment ID">
+    <button onclick="testPayment()">Test Payment</button>
+
+    <script>
+        function testPayment() {
+            const bookingId = document.getElementById('bookingId').value;
+            const paymentId = document.getElementById('paymentId').value;
+            const authToken = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxOCwiZXhwIjoxNzM5MTIyNTc5fQ.aUvhL7j0T3KBeB9DJU1In6RJxplup2FtMEduxrgOMko';
+            
+            fetch(`/api/v1/bookings/${bookingId}/payments/${paymentId}/checkout_options`, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const options = {
+                    key: data.payment.key_id, // Razorpay API key
+                    amount: data.payment.amount,
+                    currency: data.payment.currency,
+                    order_id: data.payment.razorpay_order_id,
+                    name: data.payment.name,
+                    description: data.payment.description,
+                    image: data.payment.image,
+                    prefill: data.payment.prefill,
+                    notes: data.payment.notes,
+                    handler: function(response) {
+                        console.log('Payment success:', response);
+                        verifyPayment(response, bookingId, paymentId, data.booking.booking_number, authToken);
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            console.log('Payment modal closed');
+                        }
+                    },
+                    theme: {
+                        color: '#2E5A88'
+                    }
+                };
+
+                console.log('Payment options:', options); // Debug options
+                const rzp = new Razorpay(options);
+                rzp.open();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to initialize payment. Check console for details.');
+            });
+        }
+        
+        function verifyPayment(response, bookingId, paymentId, bookingNumber, authToken) {
+            fetch(`/api/v1/bookings/${bookingId}/payments/${paymentId}/verify_payment`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    booking_number: bookingNumber,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature
+                })
+            })
+            .then(response => response.json())
+            .then(data => console.log('Verification result:', data))
+            .catch(error => console.error('Verification error:', error));
+        }
+
+    </script>
+</body>
+</html>

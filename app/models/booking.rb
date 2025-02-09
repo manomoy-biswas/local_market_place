@@ -1,5 +1,5 @@
 class Booking < ApplicationRecord
-  belongs_to :traveler, class_name: "User"
+  belongs_to :traveler
   belongs_to :experience
   has_one :review, dependent: :destroy
   has_many :payments, dependent: :restrict_with_error
@@ -15,7 +15,7 @@ class Booking < ApplicationRecord
   }
 
   validates :booking_date, :participants, presence: true
-  validates :participants, numericality: { 
+  validates :participants, numericality: {
     greater_than: 0,
     less_than_or_equal_to: ->(booking) { booking.experience.max_participants }
   }
@@ -58,6 +58,10 @@ class Booking < ApplicationRecord
       status: :pending,
       gateway_reference: nil
     )
+  end
+
+  def paid?
+    confirmed_payment.present?
   end
 
   private

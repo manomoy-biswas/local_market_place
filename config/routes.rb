@@ -22,6 +22,12 @@ Rails.application.routes.draw do
         member do
           post :cancel
         end
+        resources :payments do
+          member do
+            post :verify_payment
+            get :checkout_options
+          end
+        end
       end
       resources :reviews
 
@@ -33,13 +39,6 @@ Rails.application.routes.draw do
           collection do
             get "conversation/:user_id", to: "messages#conversation"
           end
-        end
-      end
-
-      resources :payments do
-        member do
-          post :refund
-          post :confirm
         end
       end
       resources :hosts

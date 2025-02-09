@@ -8,7 +8,7 @@ class User < ApplicationRecord
   has_one :host, dependent: :destroy
   has_many :experiences, through: :host
   has_many :bookings, through: :traveler
-  has_many :booking_payments, through: :bookings, class: "Payment"
+  has_many :booking_payments, through: :bookings, class_name: "Payment"
   has_many :reviews, foreign_key: :reviewer_id, dependent: :destroy
   has_many :received_reviews, class_name: "Review", as: :reviewable
 

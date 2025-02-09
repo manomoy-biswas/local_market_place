@@ -23,7 +23,6 @@ class Payment::RazorpayService
 
   def verify_payment(payment_id, signature)
     razorpay_payment = Razorpay::Payment.fetch(payment_id)
-
     if razorpay_payment.order_id == @payment.gateway_reference
       if verify_signature(payment_id, signature)
         process_successful_payment(razorpay_payment)
@@ -59,11 +58,12 @@ class Payment::RazorpayService
   private
 
   def verify_signature(payment_id, signature)
-    Razorpay::Utility.verify_payment_signature({
-      "razorpay_order_id" => @payment.gateway_reference,
-      "razorpay_payment_id" => payment_id,
-      "razorpay_signature" => signature
-    })
+    payload = {
+      razorpay_order_id: @payment.gateway_reference.to_str,
+      razorpay_payment_id: payment_id.to_str,
+      razorpay_signature: signature.to_str
+    }.transform_keys(&:to_sym)
+    Razorpay::Utility.verify_payment_signature(payload)
   rescue Razorpay::Error
     false
   end
@@ -76,7 +76,7 @@ class Payment::RazorpayService
       currency: razorpay_payment.currency,
       status: :completed,
       paid_at: Time.current,
-      payment_details: razorpay_payment.to_h
+      payment_details: razorpay_payment.attributes
     )
     @booking.confirm!
   end
